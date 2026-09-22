@@ -17,13 +17,13 @@ function Highlight({ text, query }) {
 }
 
 export function SearchView({ data }) {
-  const { couples, entries } = data
+  const { couples, entries, settings } = data
   const [query, setQuery] = useState('')
 
   const styles = useMemo(() => danceStyleTally(entries), [entries])
   const results = useMemo(
-    () => findByDanceStyle(entries, couples, query),
-    [entries, couples, query],
+    () => findByDanceStyle(entries, couples, query, settings.weekThemes),
+    [entries, couples, query, settings.weekThemes],
   )
 
   return (
@@ -88,7 +88,10 @@ export function SearchView({ data }) {
                     <Highlight text={entry.danceStyle || 'Untitled dance'} query={query} />
                   </span>
                   <span className="result-row__who">{coupleName(couple)}</span>
-                  <span className="result-row__meta num">Week {entry.week}</span>
+                  <span className="result-row__meta">
+                    Week <span className="num">{entry.week}</span>
+                    {settings.weekThemes[entry.week] ? ` · ${settings.weekThemes[entry.week]}` : ''}
+                  </span>
                 </div>
                 {(entry.song || entry.songArtist) && (
                   <div className="result-row__song">
@@ -98,11 +101,7 @@ export function SearchView({ data }) {
                 )}
                 <div className="result-row__scores">
                   <span>Judges <b className="num">{entry.judgeTotal || '—'}</b></span>
-                  <span>Total <b className="num">{Number.isFinite(entry.totalScore) ? entry.totalScore : '—'}</b></span>
                   <span>Mine <b className="num">{Number.isFinite(entry.herScore) ? entry.herScore : '—'}</b></span>
-                  {Number.isFinite(entry.weekPlacement) && (
-                    <span>Placed <b className="num">{entry.weekPlacement}</b></span>
-                  )}
                   {entry.guestJudgeName && <span>Guest: <b>{entry.guestJudgeName}</b></span>}
                 </div>
                 {entry.personalNotes.trim() && (

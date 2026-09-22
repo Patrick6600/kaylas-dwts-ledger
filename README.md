@@ -40,23 +40,23 @@ For a user site (`<user>.github.io`), use `VITE_BASE=/`.
 
 | | |
 |---|---|
-| **Entry** | One card per couple for the selected week. Judge Total adds itself up live as scores go in; Total Score and My Score are typed in from what the show displays. The week's standings sit alongside and re-sort as you type. Couples are marked eliminated from here. |
-| **Board** | Cumulative Judge Total, Total Score and My Score for the season, sortable by any column. Eliminated couples stay in the list, greyed out. Tap a row to read that couple's notes across every week. |
-| **Trends** | One couple's three scores over the season, or several couples overlaid. |
-| **Dances** | Search the whole season by dance style, song or artist. |
+| **Entry** | The week's theme at the top, then one card per couple. Judge Total adds itself up live as scores go in; My Score is typed in. The week's standings sit alongside and re-sort as you type. Couples are marked eliminated from here. |
+| **Board** | Cumulative Judge Total and My Score for the season, sortable by either column. Eliminated couples stay in the list, greyed out. Tap a row to read that couple's notes across every week, each tagged with its week theme. |
+| **Trends** | One couple's two scores over the season, or several couples overlaid. |
+| **Dances** | Search the whole season by dance style, song, artist or week theme. |
 | **Backup** | Export the season to a JSON file and restore from one. |
 
 ### About the Trends axis
 
-Judge Total runs to 30 (40 with a guest judge), My Score to 10, and Total Score
-is whatever the show puts on screen. Plotted raw on one axis, My Score flattens
-into the floor and the comparison is worthless — and a second y-axis is worse.
+Judge Total runs to 30, or 40 with a guest judge, and My Score to 10. Plotted
+raw on one axis, My Score flattens into the floor and the comparison is
+worthless — and a second y-axis is worse.
 
 So **Indexed** (the default) shows each score as a share of the week's highest:
-100% means nobody scored higher that week. All three land on one honest axis, and
-the gaps between the lines *are* the disagreement between the judges, the show
-and Kayla. **Raw** shows the recorded numbers in three stacked panels, each with
-its own scale.
+100% means nobody scored higher that week. Both land on one honest axis, and the
+gap between the lines *is* the disagreement between the judges and Kayla.
+**Raw** shows the recorded numbers in two stacked panels, each with its own
+scale.
 
 Chart colours were validated for colour-blind separation and contrast against the
 app's dark surface rather than picked by eye.

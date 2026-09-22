@@ -178,6 +178,17 @@ export function useSeasonData() {
     })
   }, [])
 
+  const setWeekTheme = useCallback((week, text) => {
+    setSettings((prev) => {
+      const next = sanitizeSettings({
+        ...prev,
+        weekThemes: { ...prev.weekThemes, [week]: text },
+      })
+      backend.putSettings(next).catch(setError)
+      return next
+    })
+  }, [])
+
   // --- settings -----------------------------------------------------------
   const updateSettings = useCallback((patch) => {
     setSettings((prev) => {
@@ -215,15 +226,24 @@ export function useSeasonData() {
     const nextSettings = sanitizeSettings(bundle.settings)
     if (!nextCouples.length) throw new Error('That backup has no couples in it.')
 
+    // A backup taken before a couple joined the roster must not drop them: the
+    // roster is canonical, the file only supplies their elimination state.
+    const roster = buildRoster()
+    const fromFile = new Map(nextCouples.map((c) => [c.id, c]))
+    const mergedCouples = [
+      ...roster.map((c) => fromFile.get(c.id) ?? c),
+      ...nextCouples.filter((c) => !roster.some((r) => r.id === c.id)),
+    ]
+
     await flush()
-    await backend.replaceAll({ couples: nextCouples, entries: nextEntries, settings: nextSettings })
+    await backend.replaceAll({ couples: mergedCouples, entries: nextEntries, settings: nextSettings })
 
     const map = {}
     nextEntries.forEach((e) => { map[e.id] = e })
-    setCouples(nextCouples)
+    setCouples(mergedCouples)
     setEntriesById(map)
     setSettings(nextSettings)
-    return { couples: nextCouples.length, entries: nextEntries.length }
+    return { couples: mergedCouples.length, entries: nextEntries.length }
   }, [flush])
 
   const resetSeason = useCallback(async () => {
@@ -249,6 +269,7 @@ export function useSeasonData() {
     setJudgeScore,
     setGuestJudge,
     clearEntry,
+    setWeekTheme,
     setElimination,
     updateSettings,
     buildBundle,

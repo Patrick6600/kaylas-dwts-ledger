@@ -406,6 +406,14 @@ a { color: var(--silver-bright); }
 
 /* --------------------------------------------------------------- entry view */
 
+/* One theme per week, sitting above the couple cards. */
+.week-theme { margin-bottom: 16px; }
+.week-theme .input {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
 .entry-layout { display: grid; gap: 18px; }
 
 /* On a phone the board sits above the cards so it is on screen the moment she
@@ -658,6 +666,12 @@ a { color: var(--silver-bright); }
 .note-row__week { color: var(--violet-bright); font-family: var(--font-display); }
 .note-row__dance { color: var(--ink); }
 .note-row__song { color: var(--ink-3); font-style: italic; }
+.note-row__theme {
+  color: var(--violet-bright);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .note-row p { margin: 2px 0 0; font-size: 0.85rem; color: var(--ink-2); white-space: pre-wrap; }
 .note-row p b { color: var(--ink-3); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; display: block; }
 

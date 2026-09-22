@@ -13,6 +13,7 @@ const CAST = [
   ['jenna-dewan', 'Jenna Dewan', 'Val Chmerkovskiy'],
   ['ezra-frech', 'Ezra Frech', 'Daniella Karagach'],
   ['amber-glenn', 'Amber Glenn', 'Pasha Pashkov'],
+  ['taylor-hanson', 'Taylor Hanson', 'Britt Stewart'],
   ['maura-higgins', 'Maura Higgins', 'Mark Ballas'],
   ['conner-leavitt', 'Conner Leavitt', 'Adele Zaikman'],
   ['ciara-miller', 'Ciara Miller', 'Brandon Armstrong'],
@@ -33,6 +34,14 @@ export function buildRoster() {
     eliminatedWeek: null,
   }))
 }
+
+// Offered as suggestions in the week-theme field; any text is allowed.
+export const WEEK_THEMES = [
+  'Premiere Night', 'Most Memorable Year', 'Disney Night', 'Halloween Night',
+  'Villains Night', 'Motown Night', 'TV Night', 'Movie Night', 'Dedication Night',
+  'Latin Night', 'Prom Night', 'Hair Metal Night', '80s Night', '90s Night',
+  'Broadway Night', 'Icons Night', 'Semi-Finals', 'Finale',
+]
 
 // Offered in the dance-style field as suggestions; she can type anything else.
 export const DANCE_STYLES = [

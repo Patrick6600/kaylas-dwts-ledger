@@ -6,8 +6,10 @@ export const SCHEMA_VERSION = 1
 export const DEFAULT_SETTINGS = {
   seasonNumber: SEASON_NUMBER,
   totalWeeks: DEFAULT_TOTAL_WEEKS,
-  // 'sum' matches the other two cumulative columns; 'average' is the toggle.
+  // 'sum' matches the other cumulative column; 'average' is the toggle.
   herScoreMode: 'sum',
+  // Season-wide, keyed by week number: { 1: 'Premiere Night', 2: 'Disney Night' }.
+  weekThemes: {},
 }
 
 export function makeEntryId(coupleId, week) {
@@ -26,9 +28,7 @@ export function blankEntry(coupleId, week) {
     judgeScores: [null, null, null],
     guestJudgeName: null,
     judgeTotal: 0,
-    totalScore: null,
     herScore: null,
-    weekPlacement: null,
     judgeNotes: '',
     personalNotes: '',
   }
@@ -48,8 +48,7 @@ export function isEntryEmpty(entry) {
   if (!entry) return true
   const hasText = [entry.danceStyle, entry.song, entry.songArtist, entry.judgeNotes, entry.personalNotes]
     .some((v) => (v || '').trim() !== '')
-  const hasNumber = [entry.totalScore, entry.herScore, entry.weekPlacement]
-    .some((v) => Number.isFinite(v))
+  const hasNumber = Number.isFinite(entry.herScore)
   const hasScore = (entry.judgeScores || []).some((s) => Number.isFinite(s))
   return !hasText && !hasNumber && !hasScore && !entry.guestJudgeName
 }
@@ -90,9 +89,7 @@ export function sanitizeEntry(raw) {
     judgeScores,
     guestJudgeName,
     judgeTotal: 0,
-    totalScore: coerceNum(raw.totalScore, { min: 0 }),
     herScore: coerceNum(raw.herScore, { min: 1, max: 10 }),
-    weekPlacement: coerceNum(raw.weekPlacement, { min: 1, integer: true }),
     judgeNotes: String(raw.judgeNotes ?? ''),
     personalNotes: String(raw.personalNotes ?? ''),
   })
@@ -110,12 +107,28 @@ export function sanitizeCouple(raw) {
   }
 }
 
+// Themes are stored untrimmed so typing a space does not fight the cursor; an
+// all-whitespace theme is dropped rather than stored.
+const MAX_THEME_LEN = 120
+
+function sanitizeWeekThemes(raw) {
+  if (!raw || typeof raw !== 'object') return {}
+  const out = {}
+  Object.entries(raw).forEach(([week, value]) => {
+    const w = coerceNum(week, { min: 1, integer: true })
+    const text = String(value ?? '').slice(0, MAX_THEME_LEN)
+    if (w && text.trim()) out[w] = text
+  })
+  return out
+}
+
 export function sanitizeSettings(raw) {
   const s = raw && typeof raw === 'object' ? raw : {}
   return {
     seasonNumber: coerceNum(s.seasonNumber, { min: 1, integer: true }) ?? DEFAULT_SETTINGS.seasonNumber,
     totalWeeks: coerceNum(s.totalWeeks, { min: 1, max: 40, integer: true }) ?? DEFAULT_SETTINGS.totalWeeks,
     herScoreMode: s.herScoreMode === 'average' ? 'average' : 'sum',
+    weekThemes: sanitizeWeekThemes(s.weekThemes),
   }
 }
 

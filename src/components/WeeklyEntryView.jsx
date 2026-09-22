@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { NumField } from './NumField.jsx'
 import { ConfirmDialog, Icon, SectionHead, Empty } from './ui.jsx'
-import { DANCE_STYLES, REGULAR_JUDGES } from '../data/roster.js'
+import { DANCE_STYLES, REGULAR_JUDGES, WEEK_THEMES } from '../data/roster.js'
 import { activeCouplesForWeek, weekLeaderboard, shortName } from '../data/selectors.js'
 
 function WeekBar({ weeks, week, setWeek, filledWeeks, onAddWeek }) {
@@ -31,13 +31,33 @@ function WeekBar({ weeks, week, setWeek, filledWeeks, onAddWeek }) {
   )
 }
 
+/* The theme belongs to the week, not to any one couple, so it sits above the
+   cards and is stored once per week. */
+function WeekThemeField({ week, value, onChange }) {
+  return (
+    <div className="card panel week-theme">
+      <div className="field">
+        <label htmlFor="week-theme">Week {week} theme</label>
+        <input
+          id="week-theme"
+          className="input"
+          list="week-themes"
+          value={value}
+          placeholder="Premiere Night, Disney Night, Most Memorable Year"
+          onChange={(e) => onChange(week, e.target.value)}
+        />
+      </div>
+    </div>
+  )
+}
+
 const BOARD_PREVIEW = 5
 
 function MiniLeaderboard({ rows, week }) {
   // Fifteen rows would push the entry cards off the bottom of a phone screen,
   // so the board opens as a top five and expands on request.
   const [showAll, setShowAll] = useState(false)
-  const scored = rows.filter((r) => r.totalScore !== null)
+  const scored = rows.filter((r) => r.judgeTotal !== null)
   const shown = showAll ? rows : rows.slice(0, BOARD_PREVIEW)
 
   return (
@@ -46,7 +66,7 @@ function MiniLeaderboard({ rows, week }) {
       <h3 style={{ fontSize: '1.15rem', margin: '4px 0 10px' }}>Tonight&rsquo;s board</h3>
       {scored.length === 0 ? (
         <p style={{ color: 'var(--ink-3)', fontSize: '0.84rem', margin: 0 }}>
-          Enter a total score and the board builds itself.
+          Enter the judge scores and the board builds itself.
         </p>
       ) : (
         <div className="mini-board">
@@ -62,8 +82,8 @@ function MiniLeaderboard({ rows, week }) {
                   {row.entry?.danceStyle?.trim() || 'No dance yet'}
                 </div>
               </div>
-              {row.totalScore !== null ? (
-                <div className="mini-board__score num">{row.totalScore}</div>
+              {row.judgeTotal !== null ? (
+                <div className="mini-board__score num">{row.judgeTotal}</div>
               ) : (
                 <div className="mini-board__score--pending">—</div>
               )}
@@ -155,15 +175,6 @@ function CoupleEntryCard({ couple, week, entry, expanded, onToggle, data, onRequ
                 onChange={(e) => updateEntry(couple.id, week, { danceStyle: e.target.value })}
               />
             </div>
-            <NumField
-              id={f('placement')}
-              label="Week placement"
-              value={entry.weekPlacement}
-              min={1}
-              max={30}
-              integer
-              onChange={(v) => updateEntry(couple.id, week, { weekPlacement: v })}
-            />
           </div>
 
           <div className="form-grid form-grid--2">
@@ -254,14 +265,6 @@ function CoupleEntryCard({ couple, week, entry, expanded, onToggle, data, onRequ
 
           <div className="form-grid form-grid--2" style={{ marginTop: 16 }}>
             <NumField
-              id={f('total')}
-              label="Total score (as aired)"
-              value={entry.totalScore}
-              min={0}
-              step={0.5}
-              onChange={(v) => updateEntry(couple.id, week, { totalScore: v })}
-            />
-            <NumField
               id={f('her')}
               label="My score"
               suffix="(1–10)"
@@ -329,7 +332,7 @@ function CoupleEntryCard({ couple, week, entry, expanded, onToggle, data, onRequ
 }
 
 export function WeeklyEntryView({ data, week, setWeek, weeks, onAddWeek }) {
-  const { couples, entries, getEntry, clearEntry } = data
+  const { couples, entries, getEntry, clearEntry, settings, setWeekTheme } = data
   const [openId, setOpenId] = useState(null)
   const [pendingClear, setPendingClear] = useState(null)
 
@@ -343,7 +346,7 @@ export function WeeklyEntryView({ data, week, setWeek, weeks, onAddWeek }) {
     <>
       <SectionHead
         title="Weekly entry"
-        subtitle="One card per couple. Judge total adds itself up; the total score and my score come from you."
+        subtitle="One card per couple. Judge total adds itself up; my score comes from you."
       />
 
       <WeekBar
@@ -357,6 +360,15 @@ export function WeeklyEntryView({ data, week, setWeek, weeks, onAddWeek }) {
       <datalist id="dance-styles">
         {DANCE_STYLES.map((s) => <option key={s} value={s} />)}
       </datalist>
+      <datalist id="week-themes">
+        {WEEK_THEMES.map((t) => <option key={t} value={t} />)}
+      </datalist>
+
+      <WeekThemeField
+        week={week}
+        value={settings.weekThemes[week] ?? ''}
+        onChange={setWeekTheme}
+      />
 
       <div className="entry-layout">
         <div>

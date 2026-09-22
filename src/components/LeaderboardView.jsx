@@ -4,11 +4,10 @@ import { seasonTotals, coupleName } from '../data/selectors.js'
 
 const COLUMNS = [
   { key: 'cumulativeJudgeTotal', label: 'Judge total', hint: 'Sum of every judge total so far' },
-  { key: 'cumulativeTotalScore', label: 'Total score', hint: 'Sum of the scores as aired' },
   { key: 'cumulativeHerScore', label: 'My score', hint: 'My own ratings' },
 ]
 
-function NotesPanel({ row }) {
+function NotesPanel({ row, themes }) {
   const withNotes = row.entries.filter(
     (e) => e.judgeNotes.trim() || e.personalNotes.trim() || e.danceStyle.trim(),
   )
@@ -22,6 +21,7 @@ function NotesPanel({ row }) {
           <div className="note-row__head">
             <span className="note-row__week num">Wk {e.week}</span>
             <span className="note-row__dance">{e.danceStyle || 'Dance not recorded'}</span>
+            {themes[e.week] && <span className="note-row__theme">{themes[e.week]}</span>}
             {e.song && <span className="note-row__song">{e.song}{e.songArtist ? ` — ${e.songArtist}` : ''}</span>}
           </div>
           {e.judgeNotes.trim() && <p><b>Judges</b>{e.judgeNotes}</p>}
@@ -34,14 +34,14 @@ function NotesPanel({ row }) {
 
 export function LeaderboardView({ data }) {
   const { couples, entries, settings, updateSettings } = data
-  const [sortKey, setSortKey] = useState('cumulativeTotalScore')
+  const [sortKey, setSortKey] = useState('cumulativeJudgeTotal')
   const [expanded, setExpanded] = useState(null)
 
   const rows = useMemo(() => {
     const totals = seasonTotals(couples, entries, settings.herScoreMode)
     // Eliminated couples stay in the sort, just dimmed — she wants the whole field.
     return totals.slice().sort((a, b) => b[sortKey] - a[sortKey]
-      || b.cumulativeTotalScore - a.cumulativeTotalScore
+      || b.cumulativeJudgeTotal - a.cumulativeJudgeTotal
       || a.couple.celebrityName.localeCompare(b.couple.celebrityName))
   }, [couples, entries, settings.herScoreMode, sortKey])
 
@@ -147,7 +147,7 @@ export function LeaderboardView({ data }) {
                   </tr>,
                   isOpen && (
                     <tr className="ledger__expand" key={`${row.couple.id}-notes`}>
-                      <td colSpan={5}><NotesPanel row={row} /></td>
+                      <td colSpan={4}><NotesPanel row={row} themes={settings.weekThemes} /></td>
                     </tr>
                   ),
                 ]

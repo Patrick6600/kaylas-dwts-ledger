@@ -203,14 +203,14 @@ function SingleCoupleChart({ rows, scale }) {
             </span>
           </div>
           <ResponsiveContainer width="100%" height={130}>
-            <LineChart data={rows} margin={{ top: 4, right: 18, bottom: i === 2 ? 4 : 0, left: 0 }}>
+            <LineChart data={rows} margin={{ top: 4, right: 18, bottom: i === METRIC_LIST.length - 1 ? 4 : 0, left: 0 }}>
               <CartesianGrid stroke={GRID} vertical={false} />
               <XAxis
                 dataKey="week"
-                tick={i === 2 ? AXIS : false}
+                tick={i === METRIC_LIST.length - 1 ? AXIS : false}
                 tickLine={false}
                 axisLine={{ stroke: GRID }}
-                height={i === 2 ? 24 : 10}
+                height={i === METRIC_LIST.length - 1 ? 24 : 10}
               />
               <YAxis tick={AXIS} tickLine={false} axisLine={false} width={46} />
               <Tooltip content={<TrendTooltip />} cursor={{ stroke: '#7d7f96', strokeWidth: 1 }} />
@@ -356,7 +356,7 @@ export function ChartsView({ data }) {
   if (!entries.length) {
     return (
       <>
-        <SectionHead title="Trends" subtitle="Judges, the show and me — week by week." />
+        <SectionHead title="Trends" subtitle="The judges and me — week by week." />
         <div className="card">
           <Empty title="No dances recorded yet">
             The charts fill in from week 1 onwards.
@@ -370,7 +370,7 @@ export function ChartsView({ data }) {
     <>
       <SectionHead
         title="Trends"
-        subtitle="Where the judges, the show and my own scoring agree — and where they part company."
+        subtitle="Where the judges and my own scoring agree — and where they part company."
       >
         <div className="segmented" role="group" aria-label="Chart mode">
           <button type="button" aria-pressed={mode === 'single'} onClick={() => setMode('single')}>One couple</button>
@@ -404,10 +404,6 @@ export function ChartsView({ data }) {
                   <span>Judge total</span>
                 </div>
                 <div className="stat">
-                  <b className="num" style={{ color: 'var(--series-total)' }}>{selectedTotals.cumulativeTotalScore || '—'}</b>
-                  <span>Total score</span>
-                </div>
-                <div className="stat">
                   <b className="num" style={{ color: 'var(--series-her)' }}>
                     {settings.herScoreMode === 'average'
                       ? (selectedTotals.herScoreCount ? selectedTotals.cumulativeHerScore.toFixed(1) : '—')
@@ -431,8 +427,8 @@ export function ChartsView({ data }) {
               </h3>
               <p style={{ margin: '0 0 10px', color: 'var(--ink-3)', fontSize: '0.8rem', maxWidth: '58ch' }}>
                 {scale === 'indexed'
-                  ? 'Each line is that week’s score as a share of the highest anyone scored that week, so all three sit on one axis. 100% means nobody beat them.'
-                  : 'The numbers as recorded. Three panels, because a judge total out of 30 and a score out of 10 do not belong on the same axis.'}
+                  ? 'Each line is that week’s score as a share of the highest anyone scored that week, so both sit on one axis. 100% means nobody beat them.'
+                  : 'The numbers as recorded. Two panels, because a judge total out of 30 and a score out of 10 do not belong on the same axis.'}
               </p>
               <div className="chip-row">
                 <div className="segmented" role="group" aria-label="Scale">

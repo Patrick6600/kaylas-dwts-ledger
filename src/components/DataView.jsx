@@ -138,7 +138,7 @@ export function DataView({ data }) {
       <ConfirmDialog
         open={confirmReset}
         title="Reset the whole season?"
-        body="Every score, note and elimination is deleted and the 15 couples go back to week one. If you have not exported a backup, do that first."
+        body={`Every score, note and elimination is deleted and the ${couples.length} couples go back to week one. If you have not exported a backup, do that first.`}
         confirmLabel="Delete everything"
         danger
         onCancel={() => setConfirmReset(false)}
